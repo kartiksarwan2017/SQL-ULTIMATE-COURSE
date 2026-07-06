@@ -379,6 +379,237 @@ WHERE firstname LIKE '%a%'
 AND salary > 50000;
 
 
+/******************* SQL JOINS (INNER JOIN) ***************************/
+/* Level 1: Basic INNER JOIN */
+/* Q1 Display all orders along with customer first names. */
+SELECT o.orderid, c.firstname
+FROM customers c
+INNER JOIN orders o
+ON c.customerid = o.customerid;
+
+/* Q2 Display orderid, firstname, lastname for all orders. */
+SELECT c.firstname, c.lastname, o.orderid
+FROM customers c
+INNER JOIN orders o
+ON c.customerid = o.customerid;
+
+/* Q3 Display order ID and product name. */
+SELECT o.orderid, p.product
+FROM orders o
+INNER JOIN products p
+ON o.productid = p.productid;
+
+/* Q4 Display all orders with customer names and product names. */  
+SELECT o.orderid, c.firstname, p.product
+FROM orders o 
+INNER JOIN customers c
+ON c.customerid = o.customerid
+INNER JOIN products p
+ON p.productid = o.productid;
+
+/* Q5 Display order ID, customer first name, and sales amount. */
+SELECT c.firstname, o.orderid, o.sales
+FROM customers c
+INNER JOIN orders o
+ON c.customerid = o.customerid;
+
+/* LEVEL 2: INNER JOIN + WHERE */
+/* Q6 Display orders placed by customers from USA */
+SELECT o.orderid, c.firstname, c.lastname
+FROM orders o
+INNER JOIN customers c
+ON o.customerid = c.customerid
+WHERE c.country = 'USA';
+
+/* Q7 Display order for products belonging to the Clothing Category */
+SELECT o.orderid, p.product
+FROM orders o
+INNER JOIN products p
+ON o.productid = p.productid
+WHERE category = 'Clothing';
+
+/* Q8 Display orders where customer score is greater than 700. */
+SELECT o.orderid
+FROM orders o
+INNER JOIN customers c
+ON o.customerid = c.customerid
+WHERE c.score > 700;
+
+/* Q9 Display orders handled by employee Mary. */
+SELECT o.orderid, e.firstname
+FROM orders o
+INNER JOIN employees e
+ON o.salespersonid = e.employeeid
+WHERE e.firstname = "Mary";
+
+
+/* Q10 Display all delivered orders along with customer names. */
+SELECT o.orderid, c.firstname, c.lastname
+FROM orders o
+INNER JOIN customers c
+ON o.customerid = c.customerid
+WHERE o.orderstatus = "Delivered";
+
+
+/***********  Level 3: Multiple INNER JOINs ***********/
+/* Q11 
+Display:
+orderid
+customer name
+product name
+sales
+*/
+SELECT o.orderid, 
+	   c.firstname AS customer_firstname, 
+	   c.lastname AS customer_lastname, 
+	   p.product AS product_name, 
+	   o.sales
+FROM orders o
+INNER JOIN customers c
+ON o.customerid = c.customerid
+INNER JOIN products p 
+ON o.productid = p.productid;
+
+
+/* Q12 Display: customer name, product name, quantity, sales */
+SELECT c.firstname AS customer_firstname,
+       c.lastname AS customer_lastname,
+	   p.product AS product_name,
+       o.quantity,
+       o.sales
+FROM orders o
+INNER JOIN customers c
+ON o.customerid = c.customerid
+INNER JOIN products p
+ON o.productid = p.productid;
+
+/* Q13
+Display:
+customer name
+salesperson name
+product name */
+SELECT c.firstname AS customer_firstname,
+       c.lastname AS customer_lastname,
+       e.firstname AS salesperson_firstname,
+       e.lastname AS salesperson_lastname,
+       p.product AS product_name
+FROM customers c
+INNER JOIN orders o
+ON o.customerid = c.customerid
+INNER JOIN employees e
+ON o.salespersonid = e.employeeid
+INNER JOIN products p
+ON o.productid = p.productid;
+
+
+/* 
+Q14 Display all orders with:
+customer name
+country
+product
+category
+*/
+SELECT c.firstname AS customer_firstname,
+	   c.lastname AS customer_lastname,
+       c.country,
+       p.product AS product_name,
+       p.category
+FROM customers c
+INNER JOIN orders o
+ON c.customerid = o.customerid
+INNER JOIN products p
+ON p.productid = o.productid;
+ 
+/*
+Q15 Display:
+orderid
+customer name
+salesperson name
+sales
+*/ 
+SELECT o.orderid,
+       c.firstname AS customer_firstname,
+       c.lastname AS customer_lastname,
+       e.firstname AS salesperson_firstname,
+       e.lastname AS salesperson_lastname,
+       o.sales 
+FROM orders o
+INNER JOIN customers c
+ON o.customerid = c.customerid
+INNER JOIN employees e
+ON o.salespersonid = e.employeeid;
+
+/************ Level 4: INNER JOIN + ORDER BY *****************/
+/* Q16 Display all orders with customer names ordered by sales descending. */
+SELECT o.orderid,
+       c.firstname AS customer_firstname,
+	   c.lastname AS customer_lastname,
+       o.sales
+FROM orders o
+INNER JOIN customers c
+ON o.customerid = c.customerid
+ORDER BY o.sales DESC;
+
+/* Q17 Display customer names and product names ordered by order date. */
+SELECT c.firstname AS customer_firstname,
+       c.lastname AS customer_lastname,
+       p.product AS product_name,
+       o.orderdate 
+FROM orders o
+INNER JOIN customers c
+ON c.customerid = o.customerid
+INNER JOIN products p
+ON p.productid = o.productid
+ORDER BY o.orderdate ASC;
+
+
+/* Q18 Display all salespersons and their handled orders ordered by orderid. */
+SELECT o.orderid,
+       e.firstname AS salesperson_firstname,
+       e.lastname AS salesperson_lastname
+FROM orders o
+INNER JOIN employees e
+ON e.employeeid = o.salespersonid
+ORDER BY o.orderid;
+
+/*********** Level 5: Aggregate + INNER JOIN ********************/
+/* Q19 Count total orders for each customer.
+       expected output: customer_name | total_orders
+*/
+SELECT c.firstname AS customer_firstname,
+       c.lastname AS customer_lastname,
+	   COUNT(o.orderid) AS total_orders
+FROM orders o
+INNER JOIN customers c
+ON c.customerid = o.customerid
+GROUP BY c.customerid;
+
+/* Q20 Calculate total sales for each customer.
+		Expected output:
+		customer_name | total_sales 
+*/
+SELECT c.firstname AS customer_firstname,
+	   c.lastname AS customer_lastname,
+       SUM(o.sales) AS total_sales
+FROM orders o
+INNER JOIN customers c
+ON c.customerid = o.customerid
+GROUP BY c.customerid;
+
+
+/* Q21 Calculate total quantity sold for each product.
+		Expected output:
+		product_name | total_quantity 
+*/
+SELECT p.product AS product_name,
+	   SUM(o.quantity) AS total_quantity
+FROM orders o
+INNER JOIN products p
+ON o.productid = p.productid
+GROUP BY p.productid;
+
+
+
 
 
 
